@@ -127,8 +127,8 @@
             </hgroup>
           </div>
           <div class="col-12 py-2 py-lg-4 col-lg-auto align-self-end">
-            <a href="/user/account.html" class="edit-profile-btn btn btn-outline-secondary w-100">
-              Account Settings
+            <a href="/user/edit.html" class="edit-profile-btn btn btn-outline-secondary w-100">
+              Edit Profile
             </a>
           </div>
         </div>
@@ -137,32 +137,23 @@
 
     <main class="bg-body-tertiary">
       <div class="container py-4">
-        <h2>Edit Profile</h2>
-        <form id="profile-update-form" class="needs-validation" novalidate>
+        <h2>Account Settings</h2>
+        <form id="password-change-form" class="needs-validation" novalidate>
           <div class="mb-3">
-            <label for="fullname" class="form-label">Full Name</label>
-            <input
-              type="text"
-              class="form-control"
-              id="fullname"
-              name="fullname"
-              data-trim
-              required
-            />
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
             <div class="invalid-feedback">
-              Full name can't be blank!
+              Password can't be blank!
             </div>
           </div>
           <div class="mb-3">
-            <label for="bio" class="form-label">Bio</label>
-            <textarea
-              class="form-control"
-              id="bio"
-              name="bio"
-              rows="3"
-            ></textarea>
+            <label for="confirm-password" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirm-password" name="confirm-password" required>
+            <div class="invalid-feedback">
+              Please confirm your password.
+            </div>
           </div>
-          <button type="submit" class="btn btn-success">Save Changes</button>
+          <button type="submit" class="btn btn-success">Change Password</button>
         </form>
       </div>
     </main>
@@ -177,60 +168,42 @@
     <script src="../postUtils.js"></script>
 
     <script>
-      // FIRST STEP SHOW CURRENT USER DATA IN THE PROFILE PAGE
-      document.addEventListener("DOMContentLoaded", async () => { 
-        //waits until html loads - DomContentLoaded event
-        // getLoginData function is supposed to return the current user's login data
+      document.addEventListener("DOMContentLoaded", async () => {
         const loginData = getLoginData();
-        // getUserByUsername function should return user's data given the username
-        const currentUser = await getUserByUsername(loginData.username); // we need to define the currentUser varaiable to get the fullname and bio of the user.
-        // Fill the input with ID 'fullname' with the user's full name
-        document.getElementById("fullname").value = currentUser.fullName; // We use currentUser.fullName to get the fullname of the user.
-        // this retreive the bio of the user and fill the input with ID 'bio' with the user's bio
-        document.getElementById("bio").value = currentUser.bio; // input element with ID 'bio' is filled with the bio of the user
-
-        document.getElementById("user-fullname").innerText =
-          currentUser.fullName; // this also retreive the fullname of the user and fill the input with ID 'user-fullname' with the user's fullname
-        document.getElementById(
-          "username"
-        ).innerText = `@${currentUser.username}`; // this is html element with ID 'username' is filled with the username of the user
+        const currentUser = await getUserByUsername(loginData.username);
+        const passForm = document.getElementById("password-change-form");
+  
+        document.getElementById("user-fullname").innerText = currentUser.fullName;
+        document.getElementById("username").innerText = `@${currentUser.username}`;
+  
+        passForm.addEventListener("submit", async (event) => {
+            const password = document.getElementById("password");
+            const confirmPassword = document.getElementById("confirm-password");
+  
+            // if password field is blank, exit the event handler
+            if (password.value == "" || confirmPassword.value == "") {
+              return;
+            }
+  
+            if (password.value !== confirmPassword.value) {
+              confirmPassword.setCustomValidity("Password does not match!");
+              confirmPassword.reportValidity();
+              return;
+            }
+  
+            try {
+              const updatedUser = await updateUserProfile(loginData.username, { password: password.value });
+              window.location.href = "/user";
+            } catch (error) {
+              // Log the error to the console and display an error message
+              console.error(error);
+              alert(`Error updating profile: ${error.message}`);
+            }
+        });
+  
+        // Parse emoji on the page with twemoji
+        twemoji.parse(document.body);
       });
-
-      // SECOND STEP UPDATE USER PROFILE!!
-      // This event listener updates the user's profile
-      document
-        .getElementById("profile-update-form") // this is the form with ID 'profile-update-form'
-        .addEventListener("submit", async (event) => { // whenever  the form is submitted, this event listener it run the following code
-
-          // Fetches login data
-          const loginData = getLoginData();
-          // following is getting the fullname and bio from the form and passing it to the updateUserProfile function
-          const fullName = document.getElementById("fullname").value;
-          const bio = document.getElementById("bio").value;
-
-          // if full name field is blank, exit the event handler
-          if (fullName.trim() == "") {
-            return;
-          }
-
-          try {
-            // updateUserProfile function is updating user's profile given the username and the new data
-            const updatedUser = await updateUserProfile(loginData.username, { // await is used to wait for the promise to be resolved
-              fullName, 
-              bio,
-            });
-            // Display success message
-            // alert('Profile updated successfully');
-            window.location.href = "/user";
-          } catch (error) {
-            // Log the error to the console and display an error message
-            console.error(error);
-            alert(`Error updating profile: ${error.message}`);
-          }
-      });
-
-      // Parse emoji on the page with twemoji
-      twemoji.parse(document.body);
     </script>
   </body>
 </html>

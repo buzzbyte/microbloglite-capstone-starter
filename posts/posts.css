@@ -1,1 +1,24 @@
 /* Posts Page CSS */
+
+.list-group-item {
+    border: none;
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 5px;
+}
+
+.list-group-item i {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 18px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    color: #ffffff;
+    border-radius: 50%;
+    background-color: #1a972b;
+}

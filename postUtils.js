@@ -1,22 +1,6 @@
 'use strict';
 
-// Fetch all the forms we want to apply custom Bootstrap validation styles to
-const forms = document.querySelectorAll('.needs-validation')
-
-// Loop over them and prevent submission
-Array.from(forms).forEach(form => {
-  form.addEventListener('submit', event => {
-    if (!form.checkValidity()) {
-      event.preventDefault()
-      event.stopPropagation()
-    }
-
-    form.classList.add('was-validated')
-  }, false)
-});
-
 async function addPost(post, loggedInUser) {
-    const author = await getUserByUsername(post.username);
     const postTmpl = document.querySelector("#ribbit-post");
     const postDiv = postTmpl.content.cloneNode(true).firstElementChild;
     postDiv.setAttribute("data-postid", post._id);
@@ -27,17 +11,20 @@ async function addPost(post, loggedInUser) {
 
     const postTimestamp = new Date(post.createdAt);
 
-    postDiv.querySelector("#post-author-fullname").textContent = author.fullName;
-    postDiv.querySelector("#post-author-fullname").href = `/user/?username=${author.username}`;
-    postDiv.querySelector("#post-author-username").textContent = `@${author.username}`;
-    postDiv.querySelector("#post-author-username").href = `/user/?username=${author.username}`;
+    postDiv.querySelector("#post-author-fullname").textContent = post.username;
+    getUserByUsername(post.username).then(author => {
+        postDiv.querySelector("#post-author-fullname").textContent = author.fullName;
+    });
+    postDiv.querySelector("#post-author-fullname").href = `/user/?username=${post.username}`;
+    postDiv.querySelector("#post-author-username").textContent = `@${post.username}`;
+    postDiv.querySelector("#post-author-username").href = `/user/?username=${post.username}`;
     postDiv.querySelector("#post-timestamp").textContent = postTimestamp.toLocaleString();
     postDiv.querySelector("#post-content").innerHTML = formatPostText(post.text);
     
     const likeBtn   = postDiv.querySelector("#post-like-btn");
     const deleteBtn = postDiv.querySelector("#post-delete-btn");
     
-    await updateLikes(post, loggedInUser, postDiv);
+    updateLikes(post, loggedInUser, postDiv);
 
     likeBtn.addEventListener('click', async (ev) => {
         ev.preventDefault();
@@ -124,6 +111,21 @@ function formatPostText(text) {
     for (const userMention of userMentions) {
         text = text.replaceAll(userMention[0], `<a class="user-mention text-decoration-none" href="/user/?username=${userMention[1]}">${userMention[0]}</a>`);
     };
+
+    // handle the dumb datauri posts that some other people did
+    let dataUris = text.matchAll(/data:([\w/\-\.]+);(\w+),(.*)/ig);
+    console.log(dataUris);
+    for (const [dataUri, mimetype, encoding, data] of dataUris) {
+        if (mimetype.startsWith("image/")) {
+            text = text.replaceAll(dataUri, `<img src="${dataUri}" alt="image attachment">`);
+        } else {
+            text = text.replaceAll(dataUri, "[User tried to post an image, but failed. lol]");
+        }
+    }
+
+    // make links clickable
+
+
     return text;
 }
 

@@ -8,23 +8,45 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     try {
         const profileUser = await getUserByUsername(queryParams?.username || loggedInUser.username);
+
+        postForm.elements.postBtn.addEventListener('click', async (ev) => {
+            const postText = postForm.elements.text;
+            if (postText.value.trim() == "") {
+                return;
+            }
+
+            await createPost(postText.value);
+    
+            // reset textarea and reload posts
+            postText.value = "";
+            clearPosts();
+            loadPosts(profileUser).then(updateNumPosts);
+
+            // clear validation
+            postForm.classList.remove('was-validated');
+        });
+        
         try {
-            var userPosts = await loadPosts(profileUser);      
-            loadInfo(profileUser, userPosts);
+            loadInfo(profileUser);
+            var userPosts = await loadPosts(profileUser);
+            updateNumPosts(userPosts); 
         } catch (error) {
             throw error // lol
         }
     } catch (error) {
         window.location.replace("/user");
     }
+
+    function updateNumPosts(userPosts) {
+        return document.querySelector("#num-posts").textContent = userPosts.length;   
+    }
     
-    async function loadInfo(profileUser, userPosts) {
+    async function loadInfo(profileUser) {
         updateVisibility(profileUser);
 
         document.querySelector("#user-fullname").textContent = profileUser.fullName;
         document.querySelector("#username").textContent      = `@${profileUser.username}`;
         document.querySelector("#user-bio").textContent      = profileUser.bio;
-        document.querySelector("#num-posts").textContent     = userPosts.length;
     }
     
     async function loadPosts(profileUser) {
@@ -50,15 +72,4 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.querySelector("#post-form").classList.remove("d-none");
         return;
     }
-
-    postForm.elements.postBtn.addEventListener('click', async (ev) => {
-        ev.preventDefault();
-        const postText = postForm.elements.text;
-        await createPost(postText.value);
-
-        // reset textarea and reload posts
-        postText.value = "";
-        clearPosts();
-        loadPosts().then(loadInfo);
-    })
 });

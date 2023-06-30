@@ -1,11 +1,31 @@
 'use strict';
 
+// BOOTSTRAP STUFF
+
+// Fetch all the forms we want to apply custom Bootstrap validation styles to
+const forms = document.querySelectorAll('.needs-validation')
+
+// Loop over them and prevent submission
+Array.from(forms).forEach(form => {
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    form.querySelectorAll("[data-trim]").forEach(inp => inp.value = inp.value.trim());
+    if (!form.checkValidity()) {
+      event.stopPropagation();
+    }
+
+    form.classList.add('was-validated')
+  }, false)
+});
+
 // NAV BAR STUFF
 document.addEventListener('DOMContentLoaded', async (ev) => {
     const loginData = getLoginData();
     const user = loginData?.token ? await getUserByUsername(loginData.username) : null;
     const userNavBtn = document.querySelector("#nav-username");
-    userNavBtn.textContent = user?.fullName || 'User'
+    if (!!userNavBtn) {
+        userNavBtn.textContent = user?.fullName || 'User';
+    }
 })
 
 // ACTUAL UTILS

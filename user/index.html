@@ -25,7 +25,7 @@
     <script>
         if (!isLoggedIn()) window.location.replace("/");
     </script>
-    <title>Profile</title>
+    <title>Profile - Ribbit</title>
 </head>
 <body class="bg-body-secondary">
     <header>
@@ -53,7 +53,7 @@
                                 Profile
                             </a></li>
                           <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="/user/account.html">
                                 <i class="bi bi-gear-fill"></i>
                                 Settings
                             </a>
@@ -105,7 +105,7 @@
                 <div class="col p-0 bg-body">
                     <form id="post-form" class="p-4 border-bottom needs-validation" novalidate>
                         <div class="mb-3">
-                            <textarea class="form-control post-field" name="text" id="post-text" rows="3" placeholder="What's on your mind?" required></textarea>
+                            <textarea class="form-control post-field" name="text" id="post-text" rows="3" placeholder="What's on your mind?" data-trim required></textarea>
                             <div class="invalid-feedback">
                                 Can't post a blank Ribbit!
                             </div>
@@ -137,7 +137,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <p id="post-content">
+                                        <p id="post-content" class="text-break">
                                             This is some content from a media component. You can replace this with any content and adjust it as needed.
                                         </p>
                                     </div>
@@ -170,22 +170,9 @@
                 </div>
             </div>
         </div>
-        <div style="text-align: right;"><img src="" width="100" alt="My Image" /></div>
-        <div
-        style="
-          text-align: right;
-          position: fixed;
-          bottom: 0;
-          right: 0;
-          z-index: -100;
-        "
-      >
-        <img
-          src="../image/Cute-Frog-With-Flowers-Illustration-3-Graphics-65013039-1-580x387-removebg-preview.png"
-          width="500px"
-          alt=""
-        />
-      </div>
+        <div style="text-align: right; position: fixed; bottom: 0; right: 0; z-index: -100;">
+            <img src="../image/Cute-Frog-With-Flowers-Illustration-3-Graphics-65013039-1-580x387-removebg-preview.png" width="500px" alt="">
+        </div>
     </main>
 
     <footer>
