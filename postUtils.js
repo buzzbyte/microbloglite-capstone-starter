@@ -15,6 +15,7 @@ async function addPost(post, loggedInUser) {
     getUserByUsername(post.username).then(author => {
         postDiv.querySelector("#post-author-fullname").textContent = author.fullName;
     });
+    postDiv.querySelector("#post-author-avatar").src = gravatar.url(post.username, {defaultIcon: defaultGravatarIcon});
     postDiv.querySelector("#post-author-fullname").href = `/user/?username=${post.username}`;
     postDiv.querySelector("#post-author-username").textContent = `@${post.username}`;
     postDiv.querySelector("#post-author-username").href = `/user/?username=${post.username}`;

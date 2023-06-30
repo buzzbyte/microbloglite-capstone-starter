@@ -29,6 +29,9 @@
       crossorigin="anonymous"
     ></script>
 
+    <!-- Gravatar -->
+    <script src="https://unpkg.com/gravatar.js/dist/index.umd.js"></script>
+
     <!-- Global CSS (CSS rules you want applied to all pages) -->
     <link rel="stylesheet" href="../global.css" />
 
@@ -115,6 +118,7 @@
             class="col-3 col-lg-3 col-xl-2 me-lg-3 px-2 py-4 px-lg-4 align-self-end justify-content-center"
           >
             <img
+              id="user-avatar"
               class="rounded-circle img-fluid"
               src="https://placehold.it/500"
               alt="Profile picture"
@@ -175,6 +179,8 @@
   
         document.getElementById("user-fullname").innerText = currentUser.fullName;
         document.getElementById("username").innerText = `@${currentUser.username}`;
+
+        document.querySelector("#user-avatar").src = gravatar.url(currentUser.username, {defaultIcon: defaultGravatarIcon, size: 500});
   
         passForm.addEventListener("submit", async (event) => {
             const password = document.getElementById("password");

@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     const loggedInUser = getLoginData(),
           queryParams  = getQueryParams();
     const postForm = document.querySelector("#post-form");
+    const showMoreBtn = document.querySelector("#show-more");
+
+    let currentPage = 1;
+    let totalPosts = 0;
     
     try {
         const profileUser = await getUserByUsername(queryParams?.username || loggedInUser.username);
@@ -20,12 +24,18 @@ document.addEventListener('DOMContentLoaded', async function() {
             // reset textarea and reload posts
             postText.value = "";
             clearPosts();
-            loadPosts(profileUser).then(updateNumPosts);
+            loadPosts(profileUser, currentPage).then(updateNumPosts);
 
             // clear validation
             postForm.classList.remove('was-validated');
         });
         
+        showMoreBtn.addEventListener('click', async (ev) => {
+            ev.preventDefault();
+            currentPage++;
+            loadPosts(profileUser, currentPage).then(updateNumPosts);
+        });
+
         try {
             loadInfo(profileUser);
             var userPosts = await loadPosts(profileUser);
@@ -37,8 +47,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         window.location.replace("/user");
     }
 
+
     function updateNumPosts(userPosts) {
-        return document.querySelector("#num-posts").textContent = userPosts.length;   
+        totalPosts += userPosts.length;
+        return document.querySelector("#num-posts").textContent = totalPosts;   
     }
     
     async function loadInfo(profileUser) {
@@ -47,10 +59,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.querySelector("#user-fullname").textContent = profileUser.fullName;
         document.querySelector("#username").textContent      = `@${profileUser.username}`;
         document.querySelector("#user-bio").textContent      = profileUser.bio;
+        document.querySelector("#user-avatar").src           = gravatar.url(profileUser.username, {defaultIcon: defaultGravatarIcon, size: 500});
     }
     
-    async function loadPosts(profileUser) {
-        userPosts = await getPosts(profileUser.username);
+    async function loadPosts(profileUser, page) {
+        userPosts = await getPosts({username: profileUser.username, page});
     
         // sort from newest to oldest
         // userPosts.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));

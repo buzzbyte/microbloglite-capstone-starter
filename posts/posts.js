@@ -7,10 +7,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     const postTextarea = postForm.elements.text;
     const postBtn = postForm.elements.postBtn;
 
-    loadPosts();
+    const showMoreBtn = document.querySelector("#show-more");
 
-    async function loadPosts() {
-        const userPosts = await getPosts();
+    let currentPage = 1;
+
+    loadPosts(currentPage);
+
+    async function loadPosts(page) {
+        const userPosts = await getPosts({page});
 
         console.log(userPosts);
     
@@ -21,6 +25,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             await addPost(post, loggedInUser);
         }
     }
+
+    showMoreBtn.addEventListener('click', async (ev) => {
+        ev.preventDefault();
+        currentPage++;
+        loadPosts(currentPage);
+    });
 
     postBtn.addEventListener('click', async (ev) => {
         if (postTextarea.value.trim() === "") {

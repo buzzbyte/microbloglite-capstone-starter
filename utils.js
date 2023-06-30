@@ -1,5 +1,7 @@
 'use strict';
 
+window.defaultGravatarIcon = "identicon";
+
 // BOOTSTRAP STUFF
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -49,8 +51,16 @@ async function createPost(text) {
     return postJSON(slashJoin(apiUrl, `posts`), {text});
 }
 
-async function getPosts(username) {
-    let qStr = !!username ? `?username=${username}` : '';
+async function getPosts({username, page, limit}) {
+    let postLimit = limit || 100;
+    let qParams = [];
+    !!username && qParams.push(`username=${username}`);
+    !!page && qParams.push(`offset=${(page - 1) * postLimit}`);
+    !!limit && qParams.push(`limit=${postLimit}`);
+    let qStr = qParams.join('&');
+    if (!!qStr) {
+        qStr = `?${qStr}`;
+    }
     return getJSON(slashJoin(apiUrl, `posts${qStr}`));
 }
 

@@ -13,8 +13,14 @@
         <!-- Bootstrap Icons -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
 
+        <!-- FontAwesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+
         <!-- Twemoji (Twitter Emojis) -->
         <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+
+        <!-- Gravatar -->
+        <script src="https://unpkg.com/gravatar.js/dist/index.umd.js"></script>
 
         <!-- Global CSS (CSS rules you want applied to all pages) -->
         <link rel="stylesheet" href="../global.css" />
@@ -108,7 +114,7 @@
                             <div class="ribbit-post px-4 py-3 border-bottom">
                                 <div class="d-flex">
                                     <div class="flex-shrink-0">
-                                        <img class="rounded-5" width="55" src="https://placehold.it/500" alt="..." />
+                                      <img id="post-author-avatar" class="rounded-5" width="55" src="https://placehold.it/80" alt="User avatar">
                                     </div>
                                     <div class="flex-grow-1 ms-3">
                                         <div class="row">
@@ -152,6 +158,9 @@
                             </div>
                         </template>
                     </div>
+                    <div class="p-4 justify-content-center text-center">
+                      <a id="show-more" class="text-decoration-none" href="#">Show More</a>
+                  </div>
                 </div>
             </div>
 
