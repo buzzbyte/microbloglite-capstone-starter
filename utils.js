@@ -108,7 +108,7 @@ async function deleteJSON(url) {
 
 async function request(url, options={}) {
     const response = await fetch(url, options);
-    if (!response.ok) {a
+    if (!response.ok) {
         const errorDetails = await response.json();
         throw errorDetails;
     }
@@ -142,6 +142,18 @@ async function authRequest(url, options={}) {
         throw errorDetails;
     }
     return response;
+}
+
+async function isImageURL(url) {
+    try {
+        const response = await fetch(url);
+        const buff = await response.blob();
+        console.log(buff);
+        return buff.type.startsWith('image/');
+    } catch (error) {
+        // return false;
+        throw error;
+    }
 }
 
 function slashJoin(...strs) {
