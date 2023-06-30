@@ -22,9 +22,10 @@ async function addPost(post, loggedInUser) {
     postDiv.querySelector("#post-timestamp").textContent = postTimestamp.toLocaleString();
     postDiv.querySelector("#post-content").innerHTML = formatPostText(post.text);
     
-    const likeBtn   = postDiv.querySelector("#post-like-btn");
+    const likeBtn       = postDiv.querySelector("#post-like-btn");
     const reribbitBtn   = postDiv.querySelector("#post-reribbit-btn");
-    const deleteBtn = postDiv.querySelector("#post-delete-btn");
+    const mentionBtn    = postDiv.querySelector("#post-mention-btn");
+    const deleteBtn     = postDiv.querySelector("#post-delete-btn");
     
     updateLikes(post, loggedInUser, postDiv);
 
@@ -45,7 +46,14 @@ async function addPost(post, loggedInUser) {
         const postText = document.querySelector("#post-text");
         postText.value = `RR: @${post.username}\n${post.text}`;
         postText.focus();
-    })
+    });
+
+    !!mentionBtn && mentionBtn.addEventListener('click', async (ev) => {
+        const postText = document.querySelector("#post-text");
+        const leadingSpace = !!postText.value.trim() ? " " : "";
+        postText.value += `${leadingSpace}@${post.username} `;
+        postText.focus();
+    });
 
     deleteBtn.addEventListener('click', async (ev) => {
         ev.preventDefault();
