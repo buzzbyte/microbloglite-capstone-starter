@@ -4,7 +4,10 @@
 
 // const apiBaseURL = "https://microbloglite.herokuapp.com";
 const apiBaseURL = "https://microbloglite.onrender.com"
-// const apiBaseURL = "http://techisized.com:3585";
+
+// somebody was spamming the original server, so I had to host it myself to test. *facepalm*
+// const apiBaseURL = "https://a80480a2162025cea4bc.techisized.com";
+// ... oh thank god they stopped.
 
 // You can use this function to get the login data of the logged-in
 // user (if any). It returns either an object including the username

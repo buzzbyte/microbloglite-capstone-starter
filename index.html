@@ -18,6 +18,12 @@
       crossorigin="anonymous"
     ></script>
 
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+    <!-- Twemoji (Twitter Emojis) -->
+    <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+
     <!-- Global CSS (CSS rules you want applied to all pages) -->
     <link rel="stylesheet" href="./global.css" />
 
@@ -53,28 +59,12 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link" href="../">Home</a>
+                <a class="nav-link active" href="/">Home</a>
               </li>
             </ul>
             <ul class="navbar-nav">
-              <li class="nav-item dropdown">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  User
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" href="#">Profile</a></li>
-                  <li><a class="dropdown-item" href="#">Settings</a></li>
-                  <li>
-                    <hr class="dropdown-divider" />
-                  </li>
-                  <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
-                </ul> 
+              <li class="nav-item">
+                <a class="nav-link" href="/registry/index.html">Register</a>
               </li>
             </ul>
           </div>
@@ -193,6 +183,12 @@
       </div>
     </footer>
 
+    <script src="./utils.js"></script>
+
     <script src="./landing.js"></script>
+    <script>
+      // Parse emoji on the page with twemoji
+      twemoji.parse(document.body);
+    </script>
   </body>
 </html>

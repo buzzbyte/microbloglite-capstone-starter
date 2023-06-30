@@ -7,10 +7,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     const postTextarea = postForm.elements.text;
     const postBtn = postForm.elements.postBtn;
 
-    loadPosts();
+    const showMoreBtn = document.querySelector("#show-more");
 
-    async function loadPosts() {
-        const userPosts = await getPosts();
+    let currentPage = 1;
+
+    loadPosts(currentPage);
+
+    async function loadPosts(page) {
+        const userPosts = await getPosts({page});
 
         console.log(userPosts);
     
@@ -22,19 +26,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    postBtn.addEventListener('click', async (ev) => {
+    showMoreBtn.addEventListener('click', async (ev) => {
         ev.preventDefault();
+        currentPage++;
+        loadPosts(currentPage);
+    });
 
+    postBtn.addEventListener('click', async (ev) => {
         if (postTextarea.value.trim() === "") {
-            Swal.fire({
-                imageUrl: 'https://th.bing.com/th/id/OIP.pxz5dUW_3Qk5HAWyGt0TVQAAAA?pid=ImgDet&rs=1',
-                imageWidth: 150,
-                imageHeight: 150,
-                imageAlt: 'Custom image',            html: '<div style="color:#F8BB86">You need to type something in the post box before submitting.</div>',
-                title: 'Oops...',
-                text: 'Cannot post an empty Ribbit!',
-                confirmButtonText: 'OK'
-            });
             return;
         }
 
@@ -44,5 +43,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         postTextarea.value = "";
         clearPosts();
         loadPosts();
+
+        // clear validation
+        postForm.classList.remove('was-validated');
     });
 });

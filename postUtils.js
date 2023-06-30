@@ -1,22 +1,6 @@
 'use strict';
 
-// Fetch all the forms we want to apply custom Bootstrap validation styles to
-const forms = document.querySelectorAll('.needs-validation')
-
-// Loop over them and prevent submission
-Array.from(forms).forEach(form => {
-  form.addEventListener('submit', event => {
-    if (!form.checkValidity()) {
-      event.preventDefault()
-      event.stopPropagation()
-    }
-
-    form.classList.add('was-validated')
-  }, false)
-});
-
 async function addPost(post, loggedInUser) {
-    const author = await getUserByUsername(post.username);
     const postTmpl = document.querySelector("#ribbit-post");
     const postDiv = postTmpl.content.cloneNode(true).firstElementChild;
     postDiv.setAttribute("data-postid", post._id);
@@ -27,17 +11,23 @@ async function addPost(post, loggedInUser) {
 
     const postTimestamp = new Date(post.createdAt);
 
-    postDiv.querySelector("#post-author-fullname").textContent = author.fullName;
-    postDiv.querySelector("#post-author-fullname").href = `/user/?username=${author.username}`;
-    postDiv.querySelector("#post-author-username").textContent = `@${author.username}`;
-    postDiv.querySelector("#post-author-username").href = `/user/?username=${author.username}`;
+    postDiv.querySelector("#post-author-fullname").textContent = post.username;
+    getUserByUsername(post.username).then(author => {
+        postDiv.querySelector("#post-author-fullname").textContent = author.fullName;
+    });
+    postDiv.querySelector("#post-author-avatar").src = gravatar.url(post.username, {defaultIcon: defaultGravatarIcon});
+    postDiv.querySelector("#post-author-fullname").href = `/user/?username=${post.username}`;
+    postDiv.querySelector("#post-author-username").textContent = `@${post.username}`;
+    postDiv.querySelector("#post-author-username").href = `/user/?username=${post.username}`;
     postDiv.querySelector("#post-timestamp").textContent = postTimestamp.toLocaleString();
     postDiv.querySelector("#post-content").innerHTML = formatPostText(post.text);
     
-    const likeBtn   = postDiv.querySelector("#post-like-btn");
-    const deleteBtn = postDiv.querySelector("#post-delete-btn");
+    const likeBtn       = postDiv.querySelector("#post-like-btn");
+    const reribbitBtn   = postDiv.querySelector("#post-reribbit-btn");
+    const mentionBtn    = postDiv.querySelector("#post-mention-btn");
+    const deleteBtn     = postDiv.querySelector("#post-delete-btn");
     
-    await updateLikes(post, loggedInUser, postDiv);
+    updateLikes(post, loggedInUser, postDiv);
 
     likeBtn.addEventListener('click', async (ev) => {
         ev.preventDefault();
@@ -50,6 +40,19 @@ async function addPost(post, loggedInUser) {
         }
         await removeLike(getLikeByUser(post, loggedInUser));
         updateLikes(post, loggedInUser);
+    });
+
+    reribbitBtn.addEventListener('click', async (ev) => {
+        const postText = document.querySelector("#post-text");
+        postText.value = `RR: @${post.username}\n${post.text}`;
+        postText.focus();
+    });
+
+    !!mentionBtn && mentionBtn.addEventListener('click', async (ev) => {
+        const postText = document.querySelector("#post-text");
+        const leadingSpace = !!postText.value.trim() ? " " : "";
+        postText.value += `${leadingSpace}@${post.username} `;
+        postText.focus();
     });
 
     deleteBtn.addEventListener('click', async (ev) => {
@@ -116,6 +119,20 @@ async function getUpdatedPost(post) {
 }
 
 function formatPostText(text) {
+    // define html entities to sanitize
+    let entityMap = {
+        // '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '`': '&#x60;',
+        '=': '&#x3D;'
+    };
+
+    // sanitize html
+    text = text.replace(/[<>"'`=]/g, (s) => entityMap[s])
+
     // make newlines actually display
     text = text.replace(/(?:\r\n|\r|\n)/g, "<br>");
 
@@ -124,6 +141,36 @@ function formatPostText(text) {
     for (const userMention of userMentions) {
         text = text.replaceAll(userMention[0], `<a class="user-mention text-decoration-none" href="/user/?username=${userMention[1]}">${userMention[0]}</a>`);
     };
+
+    // handle the dumb datauri posts that some other people did
+    let dataUris = text.matchAll(/data:([\w/\-\.]+);(\w+),(.*)/ig);
+    for (const [dataUri, mimetype, encoding, data] of dataUris) {
+        if (mimetype.startsWith("image/")) {
+            text = text.replaceAll(dataUri, `<img src="${dataUri}" alt="image attachment">`);
+        } else {
+            text = text.replaceAll(dataUri, "[User tried to post an image, but failed. lol]");
+        }
+    }
+
+    // make links clickable and make image links show up
+    let urls = text.matchAll(/(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig);
+    let imageProcessed = false;
+    for (const urlMatch of urls) {
+        const url = urlMatch[0];
+
+        // this doesnt work for some reason
+        // isImageURL(url).then((isImage) => {
+        //     console.log(isImage);
+        //     if (imageProcessed) {
+        //         return;
+        //     }
+        //     text += `<img src="${url}" alt="image preview">${url}</img>`;
+        //     imageProcessed = true;
+        // });
+
+        text = text.replace(url, `<a href="${url}">${url}</a>`);
+    }
+
     return text;
 }
 
