@@ -171,6 +171,13 @@ function formatPostText(text) {
         text = text.replace(url, `<a href="${url}">${url}</a>`);
     }
 
+    // make email links clickable
+    let emailMatches = text.matchAll(/([a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4})/ig);
+    for (const emailMatch of emailMatches) {
+        const email = emailMatch[0];
+        text = text.replaceAll(email, `<a href="mailto:${email}">${email}</a>`);
+    }
+
     return text;
 }
 
